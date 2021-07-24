@@ -49,12 +49,12 @@ my $ws = path('workspace');
 $ws->mkpath;
 
 print STDERR '  => Line: ', __LINE__, " \$git = Git::Wrapper->new\n";
-my $git = Git::Wrapper->new($ws);
+my $git = Git::Wrapper->new( $ws->stringify );
 
 print STDERR '  => Line: ', __LINE__, " \$git->clone\n";
-$git->clone( $repo_path->stringify(), $ws );
+$git->clone( $repo_path->stringify(), $ws->stringify );
 
-exit 0 if $ARGV[0] eq '--setup-only';
+exit 0 if @ARGV && $ARGV[0] eq '--setup-only';
 
 print STDERR " ==> Checkout Tag\n";
 print STDERR '  => Line: ', __LINE__, " \$git->checkout\n";
