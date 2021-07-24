@@ -1,0 +1,74 @@
+name: test
+
+on: push
+
+jobs:
+  Git-Wrapper-checkout:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, windows-latest ]
+
+    env:
+      TAR_OPTIONS: --warning=no-unknown-keyword
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          path: ${{ github.event.repository.name }}
+
+      - uses: shogo82148/actions-setup-perl@v1
+        with:
+          perl-version: 5.32.1
+          distribution: strawberry
+
+      - run: cpanm --verbose --no-test Git::Wrapper Path::Tiny
+        working-directory: ${{ github.event.repository.name }}
+        env:
+          AUTOMATED_TESTING: 1
+
+      - run: perl test.pl
+        working-directory: ${{ github.event.repository.name }}
+        env:
+          AUTOMATED_TESTING: 1
+          PERL_USE_UNSAFE_INC: 0
+
+  git-checkout:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, windows-latest ]
+
+    env:
+      TAR_OPTIONS: --warning=no-unknown-keyword
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          path: ${{ github.event.repository.name }}
+
+      - uses: shogo82148/actions-setup-perl@v1
+        with:
+          perl-version: 5.32.1
+          distribution: strawberry
+
+      - run: cpanm --verbose --no-test Git::Wrapper Path::Tiny
+        working-directory: ${{ github.event.repository.name }}
+        env:
+          AUTOMATED_TESTING: 1
+
+      - run: perl test.pl --setup-only
+        working-directory: ${{ github.event.repository.name }}
+        env:
+          AUTOMATED_TESTING: 1
+          PERL_USE_UNSAFE_INC: 0
+
+      - run: git checkout my-tag
+        working-directory: ${{ github.event.repository.name }}/workspace
+        env:
+          AUTOMATED_TESTING: 1
+          PERL_USE_UNSAFE_INC: 0
