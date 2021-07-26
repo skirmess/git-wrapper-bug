@@ -110,3 +110,35 @@ jobs:
         env:
           AUTOMATED_TESTING: 1
           PERL_USE_UNSAFE_INC: 0
+
+  gw-0048090:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, windows-latest ]
+
+    env:
+      TAR_OPTIONS: --warning=no-unknown-keyword
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          path: ${{ github.event.repository.name }}
+
+      - uses: shogo82148/actions-setup-perl@v1
+        with:
+          perl-version: 5.32.1
+          distribution: strawberry
+
+      - run: cpanm --verbose --notest https://cpan.metacpan.org/authors/id/G/GE/GENEHACK/Git-Wrapper-0.048_090.tar.gz Path::Tiny
+        working-directory: ${{ github.event.repository.name }}
+        env:
+          AUTOMATED_TESTING: 1
+
+      - run: perl test.pl
+        working-directory: ${{ github.event.repository.name }}
+        env:
+          AUTOMATED_TESTING: 1
+          PERL_USE_UNSAFE_INC: 0
